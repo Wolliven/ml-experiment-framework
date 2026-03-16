@@ -18,8 +18,10 @@ def main() -> None:
 
     result = train_model(experiment_path=args.experiment)
     model = result.get("model")
+    data_path = result.get("data_path")
     print(f"Trained model: {model}")
-    
+    print(f"Data path: {data_path}")
+
 if __name__ == "__main__":
     try:
         main()
