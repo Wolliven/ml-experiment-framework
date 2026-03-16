@@ -1,0 +1,13 @@
+model:
+  model_type: gradient_boosting
+  learning_rate: 0.1
+  n_estimators: 200
+  max_depth: 5
+
+training:
+  cv_folds: 5
+  scoring: r2
+
+data:
+  dataset: california_housing
+  test_size: 0.2

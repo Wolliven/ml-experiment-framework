@@ -17,8 +17,9 @@ def main() -> None:
     args = parser.parse_args()
 
     result = train_model(experiment_path=args.experiment)
-    print(f"Experiment completed. Result: {result}")
-
+    model = result.get("model")
+    print(f"Trained model: {model}")
+    
 if __name__ == "__main__":
     try:
         main()
