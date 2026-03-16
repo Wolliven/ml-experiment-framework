@@ -9,5 +9,9 @@ training:
   scoring: r2
 
 data:
-  dataset: california_housing
-  test_size: 0.2
+  data_path: data/california_housing.csv
+  target_column: MedHouseVal
+
+preprocessing:
+  impute_missing: true
+  missing_strategy: mean
