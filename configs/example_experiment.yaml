@@ -13,5 +13,4 @@ data:
   target_column: MedHouseVal
 
 preprocessing:
-  impute_missing: true
   missing_strategy: mean

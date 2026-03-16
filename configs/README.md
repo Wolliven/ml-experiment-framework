@@ -39,7 +39,6 @@ data:
   target_column: MedHouseVal
 
 preprocessing:
-  impute_missing: true
   missing_strategy: mean
 ```
 
@@ -124,7 +123,6 @@ Example:
 
 ```yaml
 preprocessing:
-  impute_missing: true
   missing_strategy: mean
 ```
 
@@ -132,8 +130,7 @@ Fields:
 
 | Field              | Description                                                                 |
 | ------------------ | --------------------------------------------------------------------------- |
-| `impute_missing`   | Whether missing values should be imputed, otherwise they will be dropped    |
-| `missing_strategy` | Strategy used for imputation (`mean` or `median`)                           |
+| `missing_strategy` | Strategy used for imputation (`mean`, `median`, `mode`, `drop`, `none`)     |
 
 ---
 
