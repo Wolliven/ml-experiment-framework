@@ -206,10 +206,19 @@ training:
 
 Fields:
 
-| Field      | Description                                    |
-| ---------- | ---------------------------------------------- |
-| `cv_folds` | Number of cross-validation folds               |
-| `scoring`  | Evaluation metric used during cross-validation |
+* `cv_folds`
+  Number of cross-validation folds.
+  If not provided, the default value `5` is used.
+
+* `scoring`
+  Evaluation metric used during cross-validation.
+  The available modes are the following:
+  * `r2`: Coefficient of determination (higher is better, default)
+  * `mae`: Mean Absolute Error (average absolute prediction error, more interpretable)
+  * `rmse`: Root Mean Squared Error (penalizes large errors more)
+
+  If not provided, the default mode `r2` is used.
+
 
 ---
 
