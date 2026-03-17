@@ -4,6 +4,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression, Ridge
 from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor
 from ml_engine.preprocess import preprocess_data
 from sklearn.model_selection import cross_val_score, GridSearchCV
 
@@ -16,7 +17,8 @@ def build_linear() -> Pipeline:
     ])
     return model_linear
 
-def build_ridge(alpha_grid: list) -> GridSearchCV:
+def build_ridge(model_data: dict) -> GridSearchCV:
+    alpha_grid = model_data.get("alpha_grid", [0.01, 0.1, 1.0, 10.0, 100.0])
     ridge_pipeline = Pipeline([
         ("imputer", preprocess_data),
         ("scaler", StandardScaler()),
@@ -30,12 +32,27 @@ def build_ridge(alpha_grid: list) -> GridSearchCV:
     )
     return model_ridge
 
-def build_tree(random_state: int, max_depth: int) -> DecisionTreeRegressor:
+def build_tree(model_data: dict) -> DecisionTreeRegressor:
+    random_state = model_data.get("random_state", 42)
+    max_depth = model_data.get("max_depth", 5)
     model_tree = DecisionTreeRegressor(
         max_depth=max_depth,
         random_state=random_state
     )
     return model_tree
+
+def build_forest(model_data: dict):
+    n_estimators = model_data.get("n_estimators", 100)
+    max_depth = model_data.get("max_depth", 10)
+    random_state = model_data.get("random_state", 42)
+    n_jobs = model_data.get("n_jobs", -1)
+    model_forest = RandomForestRegressor(
+        n_estimators=n_estimators,
+        max_depth=max_depth,
+        random_state=random_state,
+        n_jobs=n_jobs
+    )
+    return model_forest
 
 
 def select_model(config: dict):
@@ -47,11 +64,10 @@ def select_model(config: dict):
     if model_type == "linear":
         model = build_linear()
     elif model_type == "ridge":
-        alpha_grid = model_data.get("alpha_grid", [0.01, 0.1, 1.0, 10.0, 100.0])
-        model = build_ridge(alpha_grid=alpha_grid)
+        model = build_ridge(model_data)
     elif model_type == "tree":
-        random_state = model_data.get("random_state", 42)
-        max_depth = model_data.get("max_depth", 5)
-        model = build_tree(random_state=random_state, max_depth=max_depth)
+        model = build_tree(model_data)
+    elif model_type == "forest":
+        model = build_forest(model_data)
     
     return model
