@@ -36,5 +36,7 @@ def prepare_data(config: dict) -> tuple[pd.DataFrame, pd.Series]:
     
     target_variable = data_config.get("target_column", None)
     X = df.drop(columns=[target_variable])
+    if X.empty:
+        raise ValueError("No feature columns remain after removing target column.")
     y = df[target_variable]
     return X, y
