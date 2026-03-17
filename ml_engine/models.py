@@ -14,7 +14,7 @@ from ml_engine.preprocess import preprocess_data
 from sklearn.model_selection import GridSearchCV
 
 
-def build_linear(model_data: dict) -> Pipeline:
+def build_linear(config: dict) -> Pipeline:
     """Build a linear regression pipeline with preprocessing and scaling."""
     pipeline = Pipeline([
         ("imputer", preprocess_data()),
@@ -23,8 +23,11 @@ def build_linear(model_data: dict) -> Pipeline:
     ])
     return pipeline
 
-def build_ridge(model_data: dict) -> GridSearchCV:
+def build_ridge(config: dict) -> GridSearchCV:
     """Build a ridge regression pipeline wrapped in GridSearchCV."""
+    model_data = config.get("model", {})
+    validation_data = config.get("training", {})
+    scoring = validation_data.get("scoring", "r2")
     alpha_grid = model_data.get("alpha_grid", [0.01, 0.1, 1.0, 10.0, 100.0])
     ridge_pipeline = Pipeline([
         ("imputer", preprocess_data()),
@@ -35,12 +38,13 @@ def build_ridge(model_data: dict) -> GridSearchCV:
         ridge_pipeline,
         param_grid={"model__alpha": alpha_grid},
         cv=5,
-        scoring="r2"
+        scoring=scoring
     )
     return search
 
-def build_tree(model_data: dict) -> Pipeline:
+def build_tree(config: dict) -> Pipeline:
     """Build a decision tree regressor from configuration."""
+    model_data = config.get("model", {})
     random_state = model_data.get("random_state", 42)
     max_depth = model_data.get("max_depth", 5)
     model_tree = DecisionTreeRegressor(
@@ -53,8 +57,9 @@ def build_tree(model_data: dict) -> Pipeline:
     ])
     return pipeline
 
-def build_forest(model_data: dict) -> Pipeline:
+def build_forest(config: dict) -> Pipeline:
     """Build a random forest regressor from configuration."""
+    model_data = config.get("model", {})
     n_estimators = model_data.get("n_estimators", 100)
     max_depth = model_data.get("max_depth", 10)
     random_state = model_data.get("random_state", 42)
@@ -71,8 +76,9 @@ def build_forest(model_data: dict) -> Pipeline:
     ])
     return pipeline
 
-def build_boosting(model_data: dict) -> Pipeline:
+def build_boosting(config: dict) -> Pipeline:
     """Build a gradient boosting regressor from configuration."""
+    model_data = config.get("model", {})
     n_estimators = model_data.get("n_estimators", 100)
     max_depth = model_data.get("max_depth", 3)
     random_state = model_data.get("random_state", 42)
@@ -104,5 +110,5 @@ def select_model(config: dict):
     if not model_type:
         raise ValueError("Missing 'model_type' in config['model'].")
     if model_type not in MODEL_REGISTRY:
-        raise ValueError("The specified model is not available. Refer to README.md for model input instructions.")    
-    return MODEL_REGISTRY[model_type](model_data)
+        raise ValueError("The specified model is not available. Refer to configs/README.md for model input instructions.")    
+    return MODEL_REGISTRY[model_type](config)
