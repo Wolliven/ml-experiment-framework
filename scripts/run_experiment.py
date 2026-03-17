@@ -17,10 +17,8 @@ def main() -> None:
     args = parser.parse_args()
 
     result = train_model(experiment_path=args.experiment)
-    model = result.get("model")
-    data_path = result.get("data_path")
-    print(f"Trained model: {model}")
-    print(f"Data path: {data_path}")
+    model_path = result.get("model_path")
+    print(f"Trained model saved to: {model_path}")
 
 if __name__ == "__main__":
     try:

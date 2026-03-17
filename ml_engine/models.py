@@ -17,7 +17,7 @@ from sklearn.model_selection import GridSearchCV
 def build_linear(config: dict) -> Pipeline:
     """Build a linear regression pipeline with preprocessing and scaling."""
     pipeline = Pipeline([
-        ("imputer", preprocess_data()),
+        ("imputer", preprocess_data(config)),
         ("scaler", StandardScaler()),
         ("model", LinearRegression())
     ])
@@ -30,7 +30,7 @@ def build_ridge(config: dict) -> GridSearchCV:
     scoring = validation_data.get("scoring", "r2")
     alpha_grid = model_data.get("alpha_grid", [0.01, 0.1, 1.0, 10.0, 100.0])
     ridge_pipeline = Pipeline([
-        ("imputer", preprocess_data()),
+        ("imputer", preprocess_data(config)),
         ("scaler", StandardScaler()),
         ("model", Ridge())
     ])
@@ -52,7 +52,7 @@ def build_tree(config: dict) -> Pipeline:
         random_state=random_state
     )
     pipeline = Pipeline([
-        ("imputer", preprocess_data())
+        ("imputer", preprocess_data(config)),
         ("model", model_tree)
     ])
     return pipeline
@@ -71,7 +71,7 @@ def build_forest(config: dict) -> Pipeline:
         n_jobs=n_jobs
     )
     pipeline = Pipeline([
-        ("imputer", preprocess_data())
+        ("imputer", preprocess_data(config)),
         ("model", model_forest)
     ])
     return pipeline
@@ -90,7 +90,7 @@ def build_boosting(config: dict) -> Pipeline:
         learning_rate=learning_rate
     )
     pipeline = Pipeline([
-        ("imputer", preprocess_data())
+        ("imputer", preprocess_data(config)),
         ("model", model_boosting)
     ])
     return pipeline
