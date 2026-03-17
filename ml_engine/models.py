@@ -1,47 +1,60 @@
+"""
+Model construction utilities for regression experiments.
 
-import pandas as pd
+This module builds supported regression models from configuration
+and provides a selector function to choose the requested model.
+"""
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression, Ridge
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import GradientBoostingRegressor
 from ml_engine.preprocess import preprocess_data
-from sklearn.model_selection import cross_val_score, GridSearchCV
+from sklearn.model_selection import GridSearchCV
 
 
-def build_linear() -> Pipeline:
-    model_linear = Pipeline([
-        ("imputer", preprocess_data),
+def build_linear(model_data: dict) -> Pipeline:
+    """Build a linear regression pipeline with preprocessing and scaling."""
+    pipeline = Pipeline([
+        ("imputer", preprocess_data()),
         ("scaler", StandardScaler()),
         ("model", LinearRegression())
     ])
-    return model_linear
+    return pipeline
 
 def build_ridge(model_data: dict) -> GridSearchCV:
+    """Build a ridge regression pipeline wrapped in GridSearchCV."""
     alpha_grid = model_data.get("alpha_grid", [0.01, 0.1, 1.0, 10.0, 100.0])
     ridge_pipeline = Pipeline([
-        ("imputer", preprocess_data),
+        ("imputer", preprocess_data()),
         ("scaler", StandardScaler()),
         ("model", Ridge())
     ])
-    model_ridge = GridSearchCV(
+    search = GridSearchCV(
         ridge_pipeline,
         param_grid={"model__alpha": alpha_grid},
         cv=5,
         scoring="r2"
     )
-    return model_ridge
+    return search
 
-def build_tree(model_data: dict) -> DecisionTreeRegressor:
+def build_tree(model_data: dict) -> Pipeline:
+    """Build a decision tree regressor from configuration."""
     random_state = model_data.get("random_state", 42)
     max_depth = model_data.get("max_depth", 5)
     model_tree = DecisionTreeRegressor(
         max_depth=max_depth,
         random_state=random_state
     )
-    return model_tree
+    pipeline = Pipeline([
+        ("imputer", preprocess_data())
+        ("model", model_tree)
+    ])
+    return pipeline
 
-def build_forest(model_data: dict):
+def build_forest(model_data: dict) -> Pipeline:
+    """Build a random forest regressor from configuration."""
     n_estimators = model_data.get("n_estimators", 100)
     max_depth = model_data.get("max_depth", 10)
     random_state = model_data.get("random_state", 42)
@@ -52,22 +65,44 @@ def build_forest(model_data: dict):
         random_state=random_state,
         n_jobs=n_jobs
     )
-    return model_forest
+    pipeline = Pipeline([
+        ("imputer", preprocess_data())
+        ("model", model_forest)
+    ])
+    return pipeline
 
+def build_boosting(model_data: dict) -> Pipeline:
+    """Build a gradient boosting regressor from configuration."""
+    n_estimators = model_data.get("n_estimators", 100)
+    max_depth = model_data.get("max_depth", 3)
+    random_state = model_data.get("random_state", 42)
+    learning_rate = model_data.get("learning_rate", 0.1)
+    model_boosting = GradientBoostingRegressor(
+        n_estimators=n_estimators,
+        max_depth=max_depth,
+        random_state=random_state,
+        learning_rate=learning_rate
+    )
+    pipeline = Pipeline([
+        ("imputer", preprocess_data())
+        ("model", model_boosting)
+    ])
+    return pipeline
+
+MODEL_REGISTRY = {
+        "linear": build_linear,
+        "ridge": build_ridge,
+        "tree": build_tree,
+        "forest": build_forest,
+        "boosting": build_boosting
+    }
 
 def select_model(config: dict):
-    model_data = config.get("model")
+    """Select and build the model specified in the configuration."""
+    model_data = config.get("model", {})
     model_type = model_data.get("model_type")
-    model_selection = ["linear", "ridge", "tree", "forest", "boosting"]
-    if model_type not in model_selection:
-        raise ValueError("The specified model is not available. Refer to README.md for model input instructions.")
-    if model_type == "linear":
-        model = build_linear()
-    elif model_type == "ridge":
-        model = build_ridge(model_data)
-    elif model_type == "tree":
-        model = build_tree(model_data)
-    elif model_type == "forest":
-        model = build_forest(model_data)
-    
-    return model
+    if not model_type:
+        raise ValueError("Missing 'model_type' in config['model'].")
+    if model_type not in MODEL_REGISTRY:
+        raise ValueError("The specified model is not available. Refer to README.md for model input instructions.")    
+    return MODEL_REGISTRY[model_type](model_data)
