@@ -5,16 +5,10 @@ import yaml
 from ml_engine.features import prepare_data
 from ml_engine.models import select_model
 from ml_engine.tracking import save_experiment
+from ml_engine.constants import MODES, DEFAULT_CV_FOLDS, DEFAULT_SCORING
 from sklearn.model_selection import cross_val_score
 import pickle as pkl
 from datetime import datetime
-
-
-MODES = {
-    "r2": "r2",
-    "mae": "neg_mean_absolute_error",
-    "rmse": "neg_root_mean_squared_error",
-}
 
 def train_model(experiment_path : str = None) -> dict:
     if not experiment_path:
@@ -26,8 +20,8 @@ def train_model(experiment_path : str = None) -> dict:
         config = yaml.safe_load(file)
     
     training = config.get("training") or {}
-    cv_folds = training.get("cv_folds", 5)
-    scoring = training.get("scoring", "r2")
+    cv_folds = training.get("cv_folds", DEFAULT_CV_FOLDS)
+    scoring = training.get("scoring", DEFAULT_SCORING)
     if scoring not in MODES:
         raise ValueError("The specified scoring mode is not available. Refer to configs/README.md for model input instructions.")
     

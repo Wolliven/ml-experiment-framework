@@ -2,14 +2,7 @@
 This module contains the preprocessing logic for the model pipeline formation. It selects an appropriate strategy for processing the data based on the configuration.
 """
 from sklearn.impute import SimpleImputer
-
-IMPUTER_STRATEGIES = {
-    "mean": "mean",
-    "median": "median",
-    "mode": "most_frequent",  # sklearn name
-    "drop": None,
-    "none": None,
-}
+from ml_engine.constants import IMPUTER_STRATEGIES
 
 def preprocess_data(config: dict):
     """

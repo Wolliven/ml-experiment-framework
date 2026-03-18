@@ -1,32 +1,6 @@
 
 import numpy as np
-
-TRACKED_PARAMS = {
-    "linear": [],
-    
-    "ridge": [
-        "alpha"  # selected best alpha after GridSearchCV
-    ],
-    
-    "tree": [
-        "max_depth",
-        "random_state"
-    ],
-    
-    "forest": [
-        "n_estimators",
-        "max_depth",
-        "random_state",
-        "n_jobs"
-    ],
-    
-    "boosting": [
-        "n_estimators",
-        "learning_rate",
-        "max_depth",
-        "random_state"
-    ],
-}
+from ml_engine.constants import TRACKED_PARAMS, DEFAULT_CV_FOLDS, DEFAULT_SCORING
 
 def save_experiment(timestamp: str, scores: np.ndarray, config: dict, model):
     model_data = config.get("model")
