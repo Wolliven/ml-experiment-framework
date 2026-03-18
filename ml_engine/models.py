@@ -105,9 +105,11 @@ MODEL_REGISTRY = {
 def select_model(config: dict):
     """Select and build the model specified in the configuration."""
     model_data = config.get("model", {})
+    if not model_data:
+        raise ValueError("Missing required 'model' in config")
     model_type = model_data.get("model_type")
     if not model_type:
-        raise ValueError("Missing 'model_type' in config['model'].")
+        raise ValueError("Missing required 'model_type' in config['model'].")
     if model_type not in MODEL_REGISTRY:
         raise ValueError("The specified model is not available. Refer to configs/README.md for model input instructions.")    
     return MODEL_REGISTRY[model_type](config)
