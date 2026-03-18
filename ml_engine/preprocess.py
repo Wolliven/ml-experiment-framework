@@ -3,6 +3,13 @@ This module contains the preprocessing logic for the model pipeline formation. I
 """
 from sklearn.impute import SimpleImputer
 
+IMPUTER_STRATEGIES = {
+    "mean": "mean",
+    "median": "median",
+    "mode": "most_frequent",  # sklearn name
+    "drop": None,
+    "none": None,
+}
 
 def preprocess_data(config: dict):
     """
@@ -20,8 +27,9 @@ def preprocess_data(config: dict):
         A preprocessing transformer (e.g., SimpleImputer) or None if no preprocessing is required.
     """
     preprocessing_config = config.get('preprocessing', {})
-    strategy = preprocessing_config.get('missing_strategy', "none")
-    if strategy == "drop" or strategy == "none":
+    strategy = preprocessing_config.get('missing_strategy') or "none"
+    if strategy not in IMPUTER_STRATEGIES:
+        raise ValueError("Unsupported preprocessing strategy. Please refer to config/README.md for details")
+    if strategy in ("drop", "none"):
         return None
-    else:
-        return SimpleImputer(strategy=strategy)
+    return SimpleImputer(strategy=IMPUTER_STRATEGIES[strategy])
