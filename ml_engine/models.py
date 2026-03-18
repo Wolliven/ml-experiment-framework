@@ -13,7 +13,6 @@ from sklearn.ensemble import GradientBoostingRegressor
 from ml_engine.preprocess import preprocess_data
 from sklearn.model_selection import GridSearchCV
 
-
 def build_linear(config: dict) -> Pipeline:
     """Build a linear regression pipeline with preprocessing and scaling."""
     pipeline = Pipeline([

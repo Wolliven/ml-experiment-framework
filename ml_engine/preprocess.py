@@ -31,5 +31,5 @@ def preprocess_data(config: dict):
     if strategy not in IMPUTER_STRATEGIES:
         raise ValueError("Unsupported preprocessing strategy. Please refer to config/README.md for details")
     if strategy in ("drop", "none"):
-        return None
+        return "passthrough"
     return SimpleImputer(strategy=IMPUTER_STRATEGIES[strategy])
