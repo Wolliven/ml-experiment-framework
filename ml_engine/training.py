@@ -35,7 +35,7 @@ def train_model(experiment_path : str = None) -> dict:
     model_type = config.get("model").get("model_type")
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     model_path = f"artifacts/models/{model_type}_{timestamp}.pkl"
-    save_experiment(scores, timestamp, config, model)
+    save_experiment(scores=scores, timestamp=timestamp, config=config, model=model, model_path=model_path)
 
     with open(model_path, "wb") as f:
         pkl.dump(model, f)
