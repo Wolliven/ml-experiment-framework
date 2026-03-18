@@ -37,7 +37,16 @@ def train_model(config_path : str = None) -> dict:
     model_path = f"artifacts/models/{model_type}_{timestamp}.pkl"
     save_experiment(scores=scores, timestamp=timestamp, config=config, model=model, model_path=model_path, config_path=config_path)
 
+    artifact = {
+        "model": model,
+        "features": list(X.columns),
+        "naming": {
+            "model_type": model_type,
+            "timestamp": timestamp
+        }
+    }
+
     with open(model_path, "wb") as f:
-        pkl.dump(model, f)
+        pkl.dump(artifact, f)
 
     return {"model_path": model_path}
