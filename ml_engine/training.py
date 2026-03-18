@@ -4,7 +4,7 @@ This module contains the training logic for the machine learning model. It calls
 import yaml
 from ml_engine.features import prepare_data
 from ml_engine.models import select_model
-#from ml_engine.models import save_experiment
+from ml_engine.tracking import save_experiment
 from sklearn.model_selection import cross_val_score
 import pickle as pkl
 from datetime import datetime
@@ -25,8 +25,9 @@ def train_model(experiment_path : str = None) -> dict:
     with open(experiment_path, 'r') as file:
         config = yaml.safe_load(file)
     
-    cv_folds = config.get("training", {}).get("cv_folds", 5)
-    scoring = config.get("training", {}).get("scoring", "r2")
+    training = config.get("training") or {}
+    cv_folds = training.get("cv_folds", 5)
+    scoring = training.get("scoring", "r2")
     if scoring not in MODES:
         raise ValueError("The specified scoring mode is not available. Refer to configs/README.md for model input instructions.")
     
@@ -35,13 +36,12 @@ def train_model(experiment_path : str = None) -> dict:
 
     scores = cross_val_score(model, X, y, cv=cv_folds, scoring=MODES[scoring])
 
-    #save_experiment()
-
     model.fit(X, y)
 
     model_type = config.get("model").get("model_type")
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     model_path = f"artifacts/models/{model_type}_{timestamp}.pkl"
+    save_experiment(scores, timestamp, config, model)
 
     with open(model_path, "wb") as f:
         pkl.dump(model, f)

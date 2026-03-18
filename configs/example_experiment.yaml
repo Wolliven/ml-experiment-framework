@@ -1,5 +1,5 @@
 model:
-  model_type: forest
+  model_type: linear
   learning_rate: 0.1
   n_estimators: 200
   max_depth: 5
@@ -13,4 +13,4 @@ data:
   target_column: MedHouseVal
 
 preprocessing:
-  missing_strategy: drop
+  missing_strategy:

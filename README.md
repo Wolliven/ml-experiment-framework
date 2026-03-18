@@ -146,10 +146,9 @@ ml-experiment-framework/
 ├── configs/                   # experiment definitions
 │
 ├── artifacts/                 # generated outputs
-│   ├── models/
-│   └── predictions/
-│
-├── experiments/               # experiment metadata
+│   ├── models/                # generated models
+│   ├── predictions/           # generated predictions
+│   └── experiments/           # experiment metadata
 │
 ├── data/                      # datasets (optional / future use)
 │
