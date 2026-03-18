@@ -10,13 +10,13 @@ from sklearn.model_selection import cross_val_score
 import pickle as pkl
 from datetime import datetime
 
-def train_model(experiment_path : str = None) -> dict:
-    if not experiment_path:
+def train_model(config_path : str = None) -> dict:
+    if not config_path:
         raise ValueError("Experiment file path is required.")
-    if not experiment_path.endswith(".yaml"):
+    if not config_path.endswith(".yaml"):
         raise ValueError("Invalid experiment file format. Please provide a YAML file.")
     
-    with open(experiment_path, 'r') as file:
+    with open(config_path, 'r') as file:
         config = yaml.safe_load(file)
     
     training = config.get("training") or {}
@@ -35,7 +35,7 @@ def train_model(experiment_path : str = None) -> dict:
     model_type = config.get("model").get("model_type")
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     model_path = f"artifacts/models/{model_type}_{timestamp}.pkl"
-    save_experiment(scores=scores, timestamp=timestamp, config=config, model=model, model_path=model_path)
+    save_experiment(scores=scores, timestamp=timestamp, config=config, model=model, model_path=model_path, config_path=config_path)
 
     with open(model_path, "wb") as f:
         pkl.dump(model, f)

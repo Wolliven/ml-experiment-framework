@@ -16,7 +16,7 @@ def main() -> None:
     parser.add_argument("experiment", type=str, help="Path to the experiment YAML file.")
     args = parser.parse_args()
 
-    result = train_model(experiment_path=args.experiment)
+    result = train_model(config_path=args.experiment)
     model_path = result.get("model_path")
     print(f"Trained model saved to: {model_path}")
 
