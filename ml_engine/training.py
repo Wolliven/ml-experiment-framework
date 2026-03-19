@@ -9,6 +9,8 @@ from ml_engine.constants import MODES, DEFAULT_CV_FOLDS, DEFAULT_SCORING
 from sklearn.model_selection import cross_val_score
 import pickle as pkl
 from datetime import datetime
+from pathlib import Path
+
 
 def train_model(config_path : str = None) -> dict:
     if not config_path:
@@ -23,7 +25,7 @@ def train_model(config_path : str = None) -> dict:
     cv_folds = training.get("cv_folds", DEFAULT_CV_FOLDS)
     scoring = training.get("scoring", DEFAULT_SCORING)
     if scoring not in MODES:
-        raise ValueError("The specified scoring mode is not available. Refer to configs/README.md for model input instructions.")
+        raise ValueError("The specified scoring mode is not available. Refer to configs/README.md for valid scoring options.")
     
     X, y = prepare_data(config)
     model = select_model(config)
@@ -34,8 +36,8 @@ def train_model(config_path : str = None) -> dict:
 
     model_type = config.get("model").get("model_type")
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    Path("artifacts/models").mkdir(parents=True, exist_ok=True)
     model_path = f"artifacts/models/{model_type}_{timestamp}.pkl"
-    save_experiment(scores=scores, timestamp=timestamp, config=config, model=model, model_path=model_path, config_path=config_path)
 
     artifact = {
         "model": model,
@@ -48,5 +50,7 @@ def train_model(config_path : str = None) -> dict:
 
     with open(model_path, "wb") as f:
         pkl.dump(artifact, f)
+    
+    save_experiment(scores=scores, timestamp=timestamp, config=config, model=model, model_path=model_path, config_path=config_path)
 
     return {"model_path": model_path}
