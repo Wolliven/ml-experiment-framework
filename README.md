@@ -46,6 +46,12 @@ This project implements a **minimal version of these ideas** for educational pur
 
 The system introduces several important ML engineering concepts.
 
+### Design Principles
+
+- separation of concerns (data, features, models, training, inference)
+- reproducibility via configuration
+- artifact-based workflows
+
 ### Configuration-Driven Experiments
 
 Experiments are defined through configuration files instead of modifying training code.
@@ -61,6 +67,8 @@ model: gradient_boosting
 learning_rate: 0.05
 n_estimators: 200
 max_depth: 5
+
+...
 ```
 
 Training is executed through:
@@ -82,13 +90,13 @@ Each experiment automatically records:
 * evaluation metrics
 * timestamp
 * saved model path
+* configuration path
 
 Example:
 
 ```
-artifacts/models/
-model_v1.pkl
-model_v2.pkl
+artifacts/experiments/
+linear_2026-03-18_16-03-40.json
 ```
 
 These records allow experiments to be **reproduced and compared**.
@@ -103,11 +111,10 @@ Example:
 
 ```
 artifacts/models/
-model_v1.pkl
-model_v2.pkl
+linear_2026-03-18_16-03-40.pkl
 ```
 
-Each model is associated with the experiment that produced it.
+Each model is associated with the experiment that produced it. Models are saved together with required metadata (e.g., feature names) to ensure safe and consistent inference.
 
 ---
 
@@ -137,20 +144,23 @@ ml-experiment-framework/
 │   ├── models.py              # model construction
 │   ├── training.py            # training & evaluation
 │   ├── tracking.py            # experiment logging
-│   └── pipeline.py            # main experiment orchestration
+│   ├── preprocess.py          # preprocessing pipeline
+│   ├── constants.py           # project constants
+│   └── predict.py             # inference logic
 │
 ├── scripts/                   # CLI entrypoints
 │   ├── run_experiment.py
 │   └── predict.py
 │
 ├── configs/                   # experiment definitions
+│   └── README.md              # experiment configuration explanation
 │
 ├── artifacts/                 # generated outputs
 │   ├── models/                # generated models
 │   ├── predictions/           # generated predictions
 │   └── experiments/           # experiment metadata
 │
-├── data/                      # datasets (optional / future use)
+├── data/                      # datasets
 │
 ├── requirements.txt
 ├── README.md
@@ -176,11 +186,18 @@ The system will automatically:
 5. Save the trained model
 6. Record the experiment
 
+### Inference Input / Output
+
+- Input: CSV or JSON
+- Output: CSV (default) or JSON
+
 Inference can then be performed with:
 
 ```
-python scripts/predict.py --model artifacts/models/model_v3.pkl --input input.json
+python -m scripts.predict input.json --model artifacts/models/model_v3.pkl --out predictions.csv
 ```
+
+The input format is inferred from file extensions.
 
 ---
 
