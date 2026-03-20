@@ -6,23 +6,12 @@ from ml_engine.constants import IMPUTER_STRATEGIES
 
 def preprocess_data(config: dict):
     """
-    Preprocess the data for training. This function can be expanded to include various preprocessing steps such as handling missing values, encoding categorical variables, and feature scaling.
-
-    Parameters
-    ----------
-    config : dict
-        Configuration dictionary containing:
-        - preprocessing
-        - experiment parameters
-    Returns
-    -------
-    Transformer or None
-        A preprocessing transformer (e.g., SimpleImputer) or None if no preprocessing is required.
+    Selects and returns the preprocessing transformer based on configuration.
     """
     preprocessing_config = config.get('preprocessing', {})
-    strategy = preprocessing_config.get('missing_strategy') or "none"
+    strategy = preprocessing_config.get("missing_strategy") or "none"
     if strategy not in IMPUTER_STRATEGIES:
-        raise ValueError("Unsupported preprocessing strategy. Please refer to config/README.md for details")
+        raise ValueError("Unsupported preprocessing strategy. Please refer to configs/README.md for details")
     if strategy in ("drop", "none"):
         return "passthrough"
     return SimpleImputer(strategy=IMPUTER_STRATEGIES[strategy])

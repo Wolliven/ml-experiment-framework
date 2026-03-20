@@ -7,19 +7,7 @@ from pathlib import Path
 
 def load_data(data_config: dict) -> pd.DataFrame:
     """
-    Load and validate the dataset specified in the experiment configuration.
-
-    Parameters
-    ----------
-    data_config : dict
-        Configuration dictionary containing:
-        - data_path
-        - target_column
-
-    Returns
-    -------
-    pd.DataFrame
-        Loaded dataset.
+    Loads and validates the dataset from the experiment configuration.
     """
     data_path = data_config.get("data_path")
     if not data_path:
