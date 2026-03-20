@@ -34,9 +34,11 @@ def prepare_data(config: dict) -> tuple[pd.DataFrame, pd.Series]:
     if strategy == "drop":
         df = drop_missing(df)
     
-    target_variable = data_config.get("target_column", None)
-    X = df.drop(columns=[target_variable])
+    target_column = data_config.get("target_column", None)
+    if target_column not in df.columns:
+        raise ValueError(f"Target column '{target_column}' not found.")
+    X = df.drop(columns=[target_column])
     if X.empty:
         raise ValueError("No feature columns remain after removing target column.")
-    y = df[target_variable]
+    y = df[target_column]
     return X, y
