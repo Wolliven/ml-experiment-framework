@@ -7,13 +7,16 @@ import sys
 import argparse
 
 def main() -> None:
+    """
+    CLI for running predictions using a trained model artifact.
+    """
     from ml_engine.predict import predict
     parser = argparse.ArgumentParser(
         description="Generate predictions using a trained model",
-        epilog="python predict.py --model model.pkl input.json/csv --out json/csv"
+        epilog="python -m scripts.predict input.csv --model model.pkl --out csv"
     )
-    parser.add_argument("--model", type=str, required=False, help="Path to model to be used in the prediction")
-    parser.add_argument("--out", type=str, required=False, help="Choose the prediction format (JSON or CSV). Defaults mode is CSV")
+    parser.add_argument("--model", type=str, required=True, help="Path to model to be used in the prediction")
+    parser.add_argument("--out", type=str, required=False, help="Choose the prediction format (JSON or CSV). Defaults is CSV")
     parser.add_argument("input_path", type=str, help="Path to data to be used in the prediction")
 
     args = parser.parse_args()
