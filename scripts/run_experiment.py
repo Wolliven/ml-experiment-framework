@@ -18,7 +18,7 @@ def main() -> None:
     result = train_model(config_path=args.experiment)
     model_path = result.get("model_path")
     if not model_path:
-        raise ValueError("Training did not return a model_path.")
+        raise ValueError("Training did not return a valid model_path.")
     print(f"Experiment: {args.experiment}")
     print(f"Trained model saved to: {model_path}")
 

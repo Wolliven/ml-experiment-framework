@@ -29,9 +29,13 @@ def save_experiment(timestamp: str, scores: np.ndarray, config: dict, model, mod
         "config_path": {}
     }
 
-    params = model.named_steps["model"].get_params()
-    model_type = config.get("model").get("model_type")
+    if hasattr(model, "best_estimator_"):
+        base_model = model.best_estimator_
+    else:
+        base_model = model
 
+    params = base_model.named_steps["model"].get_params()
+    model_type = config.get("model").get("model_type")
     results["model"] = {
         "model_type": model_type,
         **{k: params[k] for k in TRACKED_PARAMS[model_type]}
