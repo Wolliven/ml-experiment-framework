@@ -1,3 +1,9 @@
+"""
+Runs inference using a trained model artifact.
+
+Loads input data, validates required features, generates predictions,
+and saves the results to disk.
+"""
 import pickle as pkl
 import pandas as pd
 import json
@@ -32,6 +38,8 @@ def predict(input_data : str, model_path : str = None, output : str = "csv") -> 
 
 
     expected = model_data.get("features")
+    if not expected:
+        raise ValueError("Model artifact missing feature definitions.")
     missing = [col for col in expected if col not in df.columns]
     if missing:
         raise ValueError(f"Missing features: {missing}")
@@ -39,10 +47,11 @@ def predict(input_data : str, model_path : str = None, output : str = "csv") -> 
     predict_data = df[expected]
     prediction = model_data["model"].predict(predict_data)
 
-    naming_data = model_data.get("naming")
+    naming_data = model_data.get("naming") or {}
     timestamp = naming_data.get("timestamp")
     model_type = naming_data.get("model_type")
     input_name = Path(input_data).stem
+    Path("artifacts/predictions").mkdir(parents=True, exist_ok=True)
     output_path = f"artifacts/predictions/{model_type}_{timestamp}_{input_name}_preds"
 
     if not output:
