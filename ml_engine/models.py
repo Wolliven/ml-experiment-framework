@@ -11,6 +11,7 @@ from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.ensemble import GradientBoostingRegressor
 from ml_engine.preprocess import preprocess_data
+from ml_engine.constants import MODES
 from sklearn.model_selection import GridSearchCV
 
 def build_linear(config: dict) -> Pipeline:
@@ -27,6 +28,9 @@ def build_ridge(config: dict) -> GridSearchCV:
     model_data = config.get("model", {})
     validation_data = config.get("training", {})
     scoring = validation_data.get("scoring", "r2")
+    if scoring not in MODES:
+        raise ValueError("Scoring mode not available. Please refer to configs/README.md for instructions.")
+    scoring = MODES[scoring]
     alpha_grid = model_data.get("alpha_grid", [0.01, 0.1, 1.0, 10.0, 100.0])
     ridge_pipeline = Pipeline([
         ("imputer", preprocess_data(config)),
@@ -102,14 +106,14 @@ MODEL_REGISTRY = {
         "boosting": build_boosting
     }
 
-def select_model(config: dict):
+def select_model(config: dict) -> Pipeline | GridSearchCV:
     """Select and build the model specified in the configuration."""
     model_data = config.get("model", {})
     if not model_data:
-        raise ValueError("Missing required 'model' in config")
+        raise ValueError("Missing required 'model' section in config")
     model_type = model_data.get("model_type")
     if not model_type:
-        raise ValueError("Missing required 'model_type' in config['model'].")
+        raise ValueError("Missing required 'model_type' section in config['model'].")
     if model_type not in MODEL_REGISTRY:
         raise ValueError("The specified model is not available. Refer to configs/README.md for model input instructions.")    
     return MODEL_REGISTRY[model_type](config)
