@@ -25,8 +25,8 @@ def load_data(data_config: dict) -> pd.DataFrame:
     if not data_path:
         raise ValueError("Data path is missing in the experiment configuration")
     
-    target_variable = data_config.get('target_column')
-    if not target_variable:
+    target_column = data_config.get('target_column')
+    if not target_column:
         raise ValueError("Target column is missing in the experiment configuration.")
 
     path = Path(data_path)
@@ -38,9 +38,9 @@ def load_data(data_config: dict) -> pd.DataFrame:
     if df.empty:
         raise ValueError("The dataset is empty.")
         
-    if target_variable not in df.columns:
-        raise ValueError(f"Target variable '{target_variable}' not found in the dataset.")
-    if df[target_variable].isna().all():
+    if target_column not in df.columns:
+        raise ValueError(f"Target variable '{target_column}' not found in the dataset.")
+    if df[target_column].isna().all():
         raise ValueError("Target column contains only missing values.")
 
     missing_rows = df.isna().any(axis=1).sum()
